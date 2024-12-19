@@ -22,6 +22,7 @@ class detailStoryViewModel(application: Application) : AndroidViewModel(applicat
         ApiConfig.apiInstant
             .getDetailStory(id, authorization)
             .enqueue(object : Callback<DetailStoryResponse> {
+                @SuppressLint("NullSafeMutableLiveData")
                 override fun onResponse(
                     call: Call<DetailStoryResponse>,
                     response: Response<DetailStoryResponse>

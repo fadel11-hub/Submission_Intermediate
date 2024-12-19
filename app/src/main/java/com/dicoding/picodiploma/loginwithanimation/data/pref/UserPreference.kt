@@ -19,6 +19,7 @@ class UserPreference private constructor(private val dataStore: DataStore<Prefer
     // Save Session
     suspend fun saveSession(user: UserModel) {
         dataStore.edit { preferences ->
+            preferences[USERID_KEY] = user.userId
             preferences[EMAIL_KEY] = user.email
             preferences[TOKEN_KEY] = user.token
             preferences[IS_LOGIN_KEY] = true
@@ -29,11 +30,10 @@ class UserPreference private constructor(private val dataStore: DataStore<Prefer
     // Get Session
     fun getSession(): Flow<UserModel> {
         return dataStore.data.map { preferences ->
-            val token = preferences[TOKEN_KEY] ?: ""
-            Log.d("Token Debug", "Token dimuat: $token")
             UserModel(
+                preferences[USERID_KEY] ?: "",
                 preferences[EMAIL_KEY] ?: "",
-                token,
+                preferences[TOKEN_KEY] ?: "",
                 preferences[IS_LOGIN_KEY] ?: false
             )
         }
@@ -41,18 +41,15 @@ class UserPreference private constructor(private val dataStore: DataStore<Prefer
 
     // Get Token Directly
     suspend fun getToken(): String {
-        val token = dataStore.data.map { preferences ->
+        return dataStore.data.map { preferences ->
             preferences[TOKEN_KEY] ?: ""
         }.first()
-        Log.d("Token Debug", "Token diakses langsung: $token")
-        return token
     }
 
     // Logout
     suspend fun logout() {
         dataStore.edit { preferences ->
             preferences.clear()
-            Log.d("Token Debug", "Token dihapus saat logout.")
         }
     }
 
@@ -60,6 +57,7 @@ class UserPreference private constructor(private val dataStore: DataStore<Prefer
         @Volatile
         private var INSTANCE: UserPreference? = null
 
+        private val USERID_KEY = stringPreferencesKey("userId")
         private val EMAIL_KEY = stringPreferencesKey("email")
         private val TOKEN_KEY = stringPreferencesKey("token")
         private val IS_LOGIN_KEY = booleanPreferencesKey("isLogin")

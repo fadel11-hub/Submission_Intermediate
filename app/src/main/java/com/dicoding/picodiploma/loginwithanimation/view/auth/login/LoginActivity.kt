@@ -38,75 +38,47 @@ class LoginActivity : AppCompatActivity() {
 
     private fun setupAction() {
         binding.loginButton.setOnClickListener {
-            showLoading(true)
+//            showLoading(true)
 
             val email = binding.emailEditText.text.toString()
             val password = binding.passwordEditText.text.toString()
 
-            // Validasi Input
             if (email.isBlank() || password.isBlank()) {
-                Toast.makeText(this, "Email dan password tidak boleh kosong", Toast.LENGTH_SHORT).show()
-                showLoading(false)
+                Toast.makeText(this, R.string.email_password_required, Toast.LENGTH_SHORT).show()
+//                showLoading(false)
                 return@setOnClickListener
             }
 
             viewModel.login(email, password).enqueue(object : Callback<LoginResponse> {
                 override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
-                    showLoading(false)
+//                    showLoading(false)
 
                     if (response.isSuccessful) {
                         val loginResponse = response.body()
-                        if (loginResponse != null && loginResponse.error == false) {
+                        if (loginResponse != null && !loginResponse.error && loginResponse.loginResult != null) {
                             val loginResult = loginResponse.loginResult
-                            if (loginResult != null) {
-                                val token = loginResult.token
-                                // Validasi token
-                                if (token.isNullOrEmpty()) {
-                                    showErrorDialog("Token tidak ditemukan. Silakan coba lagi.")
-                                }
-
-                                val user = UserModel(
-                                    loginResult.userId ?: "Unknown ID",  // Nilai default jika null
-                                    token,  // Menggunakan token yang sudah terverifikasi
-                                    true   // User berhasil login
-                                )
-
-                                viewModel.saveSession(user)
-
-                                // Navigasi ke MainActivity
-                                AlertDialog.Builder(this@LoginActivity).apply {
-                                    setTitle(R.string.yeah)
-                                    setMessage(R.string.login_successful)
-                                    val intent = Intent(context, MainActivity::class.java)
-                                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-                                    startActivity(intent)
-                                    finish()
-                                    create()
-                                    show()
-                                    Toast.makeText(this@LoginActivity, R.string.login_successful, Toast.LENGTH_SHORT).show()
-                                }
-                            } else {
-                                showErrorDialog("Login failed: Invalid login result.")
-                            }
+                            val user = UserModel(loginResult.userId, loginResult.name, loginResult.token)
+                            viewModel.saveSession(user)
+                            navigateToMainActivity()
                         } else {
-                            showErrorDialog(getString(R.string.username_password_salah))
+                            showErrorDialog(getString(R.string.invalid_login_result))
                         }
                     } else {
-                        showErrorDialog("Login failed: ${response.message()}")
+                        showErrorDialog(getString(R.string.username_password_salah))
                     }
                 }
 
                 override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
-                    showLoading(false)
-                    showErrorDialog("Gagal memuat data: ${t.message}")
+//                    showLoading(false)
+                    showErrorDialog(getString(R.string.network_error, t.message))
                 }
             })
         }
     }
 
-    private fun showLoading(state: Boolean) {
-        binding.progressBar.visibility = if (state) View.VISIBLE else View.GONE
-    }
+//    private fun showLoading(state: Boolean) {
+//        binding.progressBar.visibility = if (state) View.VISIBLE else View.GONE
+//    }
 
     private fun showErrorDialog(message: String) {
         AlertDialog.Builder(this@LoginActivity).apply {
@@ -116,5 +88,12 @@ class LoginActivity : AppCompatActivity() {
             create()
             show()
         }
+    }
+
+    private fun navigateToMainActivity() {
+        val intent = Intent(this, MainActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(intent)
+        finish()
     }
 }

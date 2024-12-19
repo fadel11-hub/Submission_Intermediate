@@ -5,15 +5,13 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+
 import com.dicoding.picodiploma.loginwithanimation.data.response.main.ItemStory
-import com.dicoding.picodiploma.loginwithanimation.data.response.main.ListStoryItem
 import com.dicoding.picodiploma.loginwithanimation.databinding.ItemStoryBinding
 
 class MainAdapter : RecyclerView.Adapter<MainAdapter.DataViewHolder>() {
 
-    private val list = ArrayList<ListStoryItem>()
+    private val list = ArrayList<ItemStory>()
     private var onItemClickCallback: OnItemClickcallBack? = null
 
     fun setOnItemClickCallback(onItemClickCallback: OnItemClickcallBack) {
@@ -21,7 +19,7 @@ class MainAdapter : RecyclerView.Adapter<MainAdapter.DataViewHolder>() {
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    fun setList(stories: ArrayList<ListStoryItem>) {
+    fun setList(stories: ArrayList<ItemStory>) {
         list.clear()
         list.addAll(stories)
         notifyDataSetChanged()
@@ -40,7 +38,7 @@ class MainAdapter : RecyclerView.Adapter<MainAdapter.DataViewHolder>() {
 
     inner class DataViewHolder(private val binding: ItemStoryBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(story: ListStoryItem) {
+        fun bind(story: ItemStory) {
             binding.tvItemName.text = story.name
             binding.tvItemDesc.text = story.description
             Glide.with(itemView.context)
@@ -55,6 +53,6 @@ class MainAdapter : RecyclerView.Adapter<MainAdapter.DataViewHolder>() {
     }
 
     interface OnItemClickcallBack {
-        fun onItemClicked(data: ListStoryItem)
+        fun onItemClicked(data: ItemStory)
     }
 }

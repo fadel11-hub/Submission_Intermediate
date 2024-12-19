@@ -32,6 +32,10 @@
     <string name="empty_image_warning">Silakan masukkan berkas gambar terlebih dahulu.</string>
     <string name="change_language">Ganti Bahasa</string>
     <string name="settings">Pengaturan</string>
+    <string name="email_password_required">Membutuhkan password</string>
+    <string name="invalid_login_result">Login gagal</string>
+    <string name="network_error">Kesalahan jaringan: %1$s</string>
+
 
 
 </resources>

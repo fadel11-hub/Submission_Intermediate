@@ -4,9 +4,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
+import com.dicoding.picodiploma.loginwithanimation.R
 import com.dicoding.picodiploma.loginwithanimation.data.UserRepository
 import com.dicoding.picodiploma.loginwithanimation.data.pref.UserModel
-import com.dicoding.picodiploma.loginwithanimation.data.response.main.ListStoryItem
+import com.dicoding.picodiploma.loginwithanimation.data.response.main.ItemStory
 import com.dicoding.picodiploma.loginwithanimation.data.response.main.StoriesResponse
 import com.dicoding.picodiploma.loginwithanimation.data.retrofit.ApiConfig
 import retrofit2.Call
@@ -14,12 +15,8 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class MainViewModel(private val repository: UserRepository) : ViewModel() {
-
-    private val _listStories = MutableLiveData<List<ListStoryItem>>()
-    val listStories: LiveData<List<ListStoryItem>> get() = _listStories
-
-    private val _errorMessage = MutableLiveData<String>()
-    val errorMessage: LiveData<String> get() = _errorMessage
+    private val listStories = MutableLiveData<ArrayList<ItemStory>>()
+    private val errorMessage = MutableLiveData<String>()
 
     fun getSession(): LiveData<UserModel> {
         return repository.getSession().asLiveData()
@@ -34,24 +31,21 @@ class MainViewModel(private val repository: UserRepository) : ViewModel() {
                     response: Response<StoriesResponse>
                 ) {
                     if (response.isSuccessful) {
-                        val stories = response.body()?.listStory?.filterNotNull()
-                        if (!stories.isNullOrEmpty()) {
-                            _listStories.postValue(stories)
-                        } else {
-                            _errorMessage.postValue("Data cerita kosong.")
-                        }
+                        listStories.postValue(response.body()?.items)
                     } else {
-                        val errorMessage = when (response.code()) {
-                            401 -> "Token expired, please login again."
-                            else -> "Gagal memuat data: ${response.message()}"
-                        }
-                        _errorMessage.postValue(errorMessage)
+                        val errorBody = response.errorBody()?.string()
+                        errorMessage.postValue("Error $errorBody")
                     }
                 }
-
                 override fun onFailure(call: Call<StoriesResponse>, t: Throwable) {
-                    _errorMessage.postValue("Gagal memuat data: ${t.message}")
+                    t.message?.let {
+                        errorMessage.postValue(R.string.gagal_memuat_data.toString())}
                 }
             })
+    }
+
+
+    fun getListStories(): LiveData<ArrayList<ItemStory>> {
+        return listStories
     }
 }
