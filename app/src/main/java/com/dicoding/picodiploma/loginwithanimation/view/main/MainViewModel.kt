@@ -14,6 +14,7 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class MainViewModel(private val repository: UserRepository) : ViewModel() {
+
     private val _listStories = MutableLiveData<List<ListStoryItem>>()
     val listStories: LiveData<List<ListStoryItem>> get() = _listStories
 
@@ -40,7 +41,11 @@ class MainViewModel(private val repository: UserRepository) : ViewModel() {
                             _errorMessage.postValue("Data cerita kosong.")
                         }
                     } else {
-                        _errorMessage.postValue("Gagal memuat data: ${response.message()}")
+                        val errorMessage = when (response.code()) {
+                            401 -> "Token expired, please login again."
+                            else -> "Gagal memuat data: ${response.message()}"
+                        }
+                        _errorMessage.postValue(errorMessage)
                     }
                 }
 

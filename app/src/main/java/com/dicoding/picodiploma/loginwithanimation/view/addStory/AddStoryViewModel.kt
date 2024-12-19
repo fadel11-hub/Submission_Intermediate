@@ -35,7 +35,7 @@ class AddStoryViewModel : ViewModel() {
                 )
 
                 val apiService = ApiConfig.apiInstant
-                val successResponse = apiService.AddStory(multipartBody, requestBody, "Bearer $token")
+                val successResponse = apiService.addStory(multipartBody, requestBody, "Bearer $token")
 
                 withContext(Dispatchers.Main) {
                     onSuccess(successResponse)

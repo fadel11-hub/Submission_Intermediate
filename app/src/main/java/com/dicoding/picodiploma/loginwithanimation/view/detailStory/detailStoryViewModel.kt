@@ -20,7 +20,7 @@ class detailStoryViewModel(application: Application) : AndroidViewModel(applicat
 
     fun setDetailStory(id: String, authorization: String) {
         ApiConfig.apiInstant
-            .DetailStories(id, authorization)
+            .getDetailStory(id, authorization)
             .enqueue(object : Callback<DetailStoryResponse> {
                 override fun onResponse(
                     call: Call<DetailStoryResponse>,
