@@ -15,14 +15,17 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.LoginWithAnimation">
+<!--        <activity-->
+<!--            android:name=".view.main.SplashActivity"-->
+<!--            android:exported="false" />-->
+        <activity
+            android:name=".view.addStory.AddStory"
+            android:exported="false" />
         <activity
             android:name=".view.auth.setting.Setting"
             android:exported="false" />
         <activity
             android:name=".view.detailStory.detailStory"
-            android:exported="false" />
-        <activity
-            android:name=".view.listStory.listStory"
             android:exported="false" />
         <activity
             android:name=".view.welcome.WelcomeActivity"
